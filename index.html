@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YOUR NAME — Robotics & Embodied AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── TOKENS ─────────────────────────────────────────────── */
+    :root {
+      --bg:        #080C14;
+      --bg2:       #0D1220;
+      --bg3:       #131928;
+      --border:    rgba(255,255,255,0.07);
+      --cyan:      #00C8FF;
+      --amber:     #F5A623;
+      --green:     #39D98A;
+      --text:      #E8EAF0;
+      --muted:     #6B7694;
+      --mono:      'IBM Plex Mono', monospace;
+      --serif:     'DM Serif Display', serif;
+      --sans:      'DM Sans', sans-serif;
+    }
+
+    /* ── RESET ───────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+    a { color: var(--cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── GRID BACKGROUND ────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 0%, black 30%, transparent 100%);
+    }
+
+    /* ── NAV ─────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 3rem;
+      height: 60px;
+      background: rgba(8, 12, 20, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--cyan);
+      letter-spacing: 0.08em;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--text); text-decoration: none; }
+    .nav-links a.active::before {
+      content: '▸ ';
+      color: var(--cyan);
+    }
+
+    /* ── LAYOUT ──────────────────────────────────────────────── */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    section {
+      padding: 5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    section:last-child { border-bottom: none; }
+
+    /* ── SECTION LABELS ──────────────────────────────────────── */
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 1rem;
+      opacity: 0.8;
+    }
+    .section-label::before { content: '§ '; }
+
+    h2 {
+      font-family: var(--serif);
+      font-size: 2.2rem;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 2rem;
+      line-height: 1.2;
+    }
+
+    /* ── HERO ────────────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 80px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-tag {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      color: var(--amber);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.2s ease forwards;
+    }
+
+    .hero-name {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      line-height: 1.05;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.4s ease forwards;
+    }
+    .hero-name em {
+      font-style: italic;
+      color: var(--cyan);
+    }
+
+    .hero-bio {
+      max-width: 560px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.6s ease forwards;
+    }
+    .hero-bio strong { color: var(--text); font-weight: 500; }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 3rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.8s ease forwards;
+    }
+
+    .badge {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      padding: 0.35rem 0.85rem;
+      border-radius: 2px;
+      border: 1px solid;
+    }
+    .badge-cyan   { border-color: var(--cyan);  color: var(--cyan);  background: rgba(0,200,255,0.06); }
+    .badge-amber  { border-color: var(--amber); color: var(--amber); background: rgba(245,166,35,0.06); }
+    .badge-green  { border-color: var(--green); color: var(--green); background: rgba(57,217,138,0.06); }
+    .badge-muted  { border-color: var(--border); color: var(--muted); background: transparent; }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.7s 1.0s ease forwards;
+    }
+    .btn {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      padding: 0.7rem 1.6rem;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+    }
+    .btn-primary {
+      background: var(--cyan);
+      color: var(--bg);
+      border: none;
+    }
+    .btn-primary:hover {
+      background: #fff;
+      text-decoration: none;
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover {
+      border-color: var(--muted);
+      text-decoration: none;
+    }
+
+    /* ── ABOUT ───────────────────────────────────────────────── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    .about-text { color: var(--muted); line-height: 1.9; }
+    .about-text p + p { margin-top: 1rem; }
+    .about-text strong { color: var(--text); font-weight: 500; }
+
+    .info-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .info-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 14px;
+    }
+    .info-key {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--cyan);
+      letter-spacing: 0.06em;
+      min-width: 80px;
+      padding-top: 2px;
+      opacity: 0.8;
+    }
+    .info-val { color: var(--text); }
+
+    /* ── RESEARCH ────────────────────────────────────────────── */
+    .research-areas {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .area-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.5rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .area-card:hover {
+      border-color: rgba(0,200,255,0.25);
+      background: var(--bg3);
+    }
+    .area-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .area-title {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.04em;
+    }
+    .area-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ── PUBLICATIONS ────────────────────────────────────────── */
+    .pub-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .pub-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0 1.25rem;
+      padding: 1.25rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      transition: border-color 0.2s;
+    }
+    .pub-item:hover { border-color: rgba(0,200,255,0.2); }
+    .pub-venue-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      min-width: 80px;
+    }
+    .pub-venue {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--cyan);
+      letter-spacing: 0.06em;
+      text-align: center;
+    }
+    .pub-year {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+    }
+    .pub-divider {
+      width: 1px;
+      flex: 1;
+      background: var(--border);
+    }
+    .pub-title {
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+    .pub-authors {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+    .pub-authors strong { color: var(--amber); }
+    .pub-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .pub-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 0.2rem 0.55rem;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 2px;
+    }
+    .status-review  { border-color: rgba(245,166,35,0.4);  color: var(--amber); }
+    .status-submit  { border-color: rgba(57,217,138,0.4);  color: var(--green); }
+    .status-pub     { border-color: rgba(0,200,255,0.4);   color: var(--cyan);  }
+
+    /* ── PROJECTS ────────────────────────────────────────────── */
+    .project-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .project-card {
+      padding: 1.5rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--cyan);
+      border-radius: 0 4px 4px 0;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .project-card:hover {
+      background: var(--bg3);
+      border-color: rgba(0,200,255,0.4);
+      border-left-color: var(--cyan);
+    }
+    .project-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 0.6rem;
+      gap: 1rem;
+    }
+    .project-title {
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 500;
+    }
+    .project-status {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 0.2rem 0.6rem;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+    .wip  { background: rgba(245,166,35,0.12); color: var(--amber); border: 1px solid rgba(245,166,35,0.3); }
+    .done { background: rgba(57,217,138,0.12); color: var(--green); border: 1px solid rgba(57,217,138,0.3); }
+    .project-desc {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      line-height: 1.7;
+    }
+    .project-stack { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .stack-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 0.25rem 0.6rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 2px;
+    }
+
+    /* ── ROADMAP ─────────────────────────────────────────────── */
+    .roadmap {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+    .roadmap::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 12px;
+      bottom: 12px;
+      width: 1px;
+      background: var(--border);
+    }
+    .roadmap-item {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+      padding: 0.75rem 0;
+    }
+    .roadmap-dot {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 4px;
+      position: relative;
+      z-index: 1;
+    }
+    .rdone { background: var(--green);  box-shadow: 0 0 8px var(--green); }
+    .ractive { background: var(--cyan); box-shadow: 0 0 10px var(--cyan); animation: pulse 2s infinite; }
+    .rpending { background: var(--bg3); border: 1px solid var(--border); }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 6px var(--cyan); }
+      50% { box-shadow: 0 0 14px var(--cyan); }
+    }
+    .roadmap-content { flex: 1; }
+    .roadmap-title {
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 500;
+      margin-bottom: 0.2rem;
+    }
+    .rdone-title { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--green); }
+    .roadmap-meta {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ── CONTACT ─────────────────────────────────────────────── */
+    .contact-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.7rem 1.2rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      transition: all 0.2s;
+    }
+    .contact-link:hover {
+      border-color: var(--cyan);
+      color: var(--text);
+      text-decoration: none;
+    }
+    .contact-icon { font-size: 1rem; }
+
+    .note-box {
+      margin-top: 2rem;
+      padding: 1.25rem 1.5rem;
+      background: rgba(0,200,255,0.04);
+      border-left: 2px solid var(--cyan);
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    .note-box strong { color: var(--cyan); font-family: var(--mono); font-size: 12px; }
+
+    /* ── FOOTER ──────────────────────────────────────────────── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2.5rem;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── ANIMATIONS ──────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────────────────── */
+    @media (max-width: 680px) {
+      nav { padding: 0 1.2rem; }
+      .nav-links { gap: 1.2rem; }
+      main { padding: 0 1.2rem; }
+      .about-grid,
+      .research-areas { grid-template-columns: 1fr; }
+      h2 { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── NAV ── -->
+  <nav id="nav">
+    <span class="nav-logo">// YOUR_NAME</span>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#research">Research</a></li>
+      <li><a href="#publications">Papers</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main>
+
+    <!-- ── HERO ── -->
+    <section id="hero">
+      <p class="hero-tag">M.Eng · Harbin Institute of Technology · Fall'27 PhD Applicant</p>
+      <h1 class="hero-name">YOUR <em>NAME</em></h1>
+      <p class="hero-bio">
+        I build robots that <strong>understand and navigate</strong> open-world environments —
+        combining cross-modal perception, vision-language grounding, and efficient edge deployment.
+        My work spans <strong>UAV localization</strong>, <strong>VLN</strong>, and
+        <strong>embodied AI</strong> navigation systems.
+      </p>
+      <div class="hero-badges">
+        <span class="badge badge-cyan">Embodied AI</span>
+        <span class="badge badge-cyan">Visual Navigation</span>
+        <span class="badge badge-amber">UAV · VLN</span>
+        <span class="badge badge-amber">Edge Deployment</span>
+        <span class="badge badge-green">Open to Internship 2026</span>
+        <span class="badge badge-muted">HIT → PhD 2027</span>
+      </div>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#publications">View Publications</a>
+        <a class="btn btn-outline" href="mailto:YOUR_EMAIL">Get in Touch</a>
+        <a class="btn btn-outline" href="YOUR_CV_LINK" target="_blank">CV / Resume</a>
+      </div>
+    </section>
+
+    <!-- ── ABOUT ── -->
+    <section id="about">
+      <p class="section-label reveal">About</p>
+      <h2 class="reveal">Background &amp;<br/><em>Motivation</em></h2>
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p>
+            I'm a Master's student in <strong>Automation Testing &amp; Control</strong> at
+            Harbin Institute of Technology, ranked near the top of my cohort.
+            Before my Master's, I worked as an <strong>edge algorithm engineer</strong> in industry,
+            deploying perception models on Jetson and RDK X5 platforms.
+          </p>
+          <p>
+            My research is driven by a simple question: <em>how can a robot make sense of an
+            unfamiliar environment the way a person would — through language, vision, and spatial
+            reasoning?</em> This pulls me toward embodied AI, particularly
+            <strong>object-goal navigation</strong> and <strong>cross-modal VLN</strong>.
+          </p>
+          <p>
+            I'm targeting a <strong>PhD position for Fall 2027</strong>, focused on navigation,
+            manipulation, and 3D scene understanding.
+          </p>
+        </div>
+        <ul class="info-list reveal">
+          <li>
+            <span class="info-key">Affiliation</span>
+            <span class="info-val">Harbin Institute of Technology</span>
+          </li>
+          <li>
+            <span class="info-key">Degree</span>
+            <span class="info-val">M.Eng · Control Science &amp; Engineering</span>
+          </li>
+          <li>
+            <span class="info-key">Industry</span>
+            <span class="info-val">Edge Algorithm Engineer (prior)</span>
+          </li>
+          <li>
+            <span class="info-key">Hardware</span>
+            <span class="info-val">Jetson · RDK X5 · RTX 5090</span>
+          </li>
+          <li>
+            <span class="info-key">Target</span>
+            <span class="info-val">PhD · Embodied AI · Fall 2027</span>
+          </li>
+          <li>
+            <span class="info-key">Location</span>
+            <span class="info-val">Harbin, China</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ── RESEARCH ── -->
+    <section id="research">
+      <p class="section-label reveal">Research</p>
+      <h2 class="reveal">Interests &amp;<br/><em>Directions</em></h2>
+      <div class="research-areas">
+        <div class="area-card reveal">
+          <div class="area-icon">🤖</div>
+          <div class="area-title">Embodied AI Navigation</div>
+          <div class="area-desc">Object-goal navigation, semantic frontier exploration, LLM-guided reasoning for open-vocabulary targets in unknown environments.</div>
+        </div>
+        <div class="area-card reveal">
+          <div class="area-icon">🛸</div>
+          <div class="area-title">UAV Perception &amp; VLN</div>
+          <div class="area-desc">Cross-modal vision-language navigation for UAVs, robust visual localization under appearance change and viewpoint shift.</div>
+        </div>
+        <div class="area-card reveal">
+          <div class="area-icon">⚡</div>
+          <div class="area-title">Edge Deployment</div>
+          <div class="area-desc">INT4/AWQ quantization, TensorRT inference, real-time perception on Jetson and RDK X5 under strict power and latency constraints.</div>
+        </div>
+        <div class="area-card reveal">
+          <div class="area-icon">🗺️</div>
+          <div class="area-title">3D Scene Understanding</div>
+          <div class="area-desc">Semantic mapping, scene graph construction, spatial reasoning for manipulation and navigation in 3D environments.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PUBLICATIONS ── -->
+    <section id="publications">
+      <p class="section-label reveal">Publications</p>
+      <h2 class="reveal">Selected<br/><em>Papers</em></h2>
+      <div class="pub-list">
+
+        <div class="pub-item reveal">
+          <div class="pub-venue-col">
+            <span class="pub-venue">IEEE RAL</span>
+            <span class="pub-year">2025</span>
+            <div class="pub-divider"></div>
+          </div>
+          <div>
+            <div class="pub-title">Cross-modal Vision-Language Navigation for Unmanned Aerial Vehicles</div>
+            <div class="pub-authors"><strong>YOUR NAME</strong>, Co-author, Co-author</div>
+            <div class="pub-tags">
+              <span class="pub-tag status-submit">Under Submission</span>
+              <span class="pub-tag">First Author</span>
+              <span class="pub-tag">UAV · VLN · Cross-modal</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pub-item reveal">
+          <div class="pub-venue-col">
+            <span class="pub-venue">IEEE TIM</span>
+            <span class="pub-year">2025</span>
+            <div class="pub-divider"></div>
+          </div>
+          <div>
+            <div class="pub-title">Robust Visual Localization for UAVs under Appearance Variation</div>
+            <div class="pub-authors"><strong>YOUR NAME</strong>, Co-author, Co-author</div>
+            <div class="pub-tags">
+              <span class="pub-tag status-review">Under Review</span>
+              <span class="pub-tag">First Author</span>
+              <span class="pub-tag">Localization · Edge</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pub-item reveal">
+          <div class="pub-venue-col">
+            <span class="pub-venue">ICSMD</span>
+            <span class="pub-year">2024</span>
+            <div class="pub-divider"></div>
+          </div>
+          <div>
+            <div class="pub-title">Paper Title at ICSMD Conference</div>
+            <div class="pub-authors"><strong>YOUR NAME</strong>, Co-author</div>
+            <div class="pub-tags">
+              <span class="pub-tag status-pub">Published</span>
+              <span class="pub-tag">Conference</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── PROJECTS ── -->
+    <section id="projects">
+      <p class="section-label reveal">Projects</p>
+      <h2 class="reveal">Engineering<br/><em>Work</em></h2>
+      <div class="project-list">
+
+        <div class="project-card reveal">
+          <div class="project-header">
+            <span class="project-title">ASCENT-Improved — Frontier Scoring Fix</span>
+            <span class="project-status wip">In Progress</span>
+          </div>
+          <p class="project-desc">
+            Identified a fundamental flaw in ASCENT's (RAL 2026) additive frontier scoring formula,
+            where proximity bonus dominates semantic relevance — causing nearby low-relevance frontiers
+            to outrank semantically significant distant ones. Proposed a training-free multiplicative
+            modulation fix, validated on HM3D/MP3D in Habitat Simulator.
+          </p>
+          <div class="project-stack">
+            <span class="stack-tag">Habitat Sim</span>
+            <span class="stack-tag">HM3D</span>
+            <span class="stack-tag">BLIP-2</span>
+            <span class="stack-tag">Qwen2.5-7B</span>
+            <span class="stack-tag">AWQ / INT4</span>
+            <span class="stack-tag">Object-Goal Nav</span>
+          </div>
+        </div>
+
+        <div class="project-card reveal">
+          <div class="project-header">
+            <span class="project-title">Cross-modal UAV VLN System</span>
+            <span class="project-status done">Completed</span>
+          </div>
+          <p class="project-desc">
+            End-to-end vision-language navigation pipeline for UAVs, integrating cross-modal
+            perception with efficient on-device inference. Deployed and tested on real hardware.
+          </p>
+          <div class="project-stack">
+            <span class="stack-tag">UAV</span>
+            <span class="stack-tag">VLN</span>
+            <span class="stack-tag">Cross-modal</span>
+            <span class="stack-tag">ROS</span>
+            <span class="stack-tag">Edge Deployment</span>
+          </div>
+        </div>
+
+        <div class="project-card reveal">
+          <div class="project-header">
+            <span class="project-title">UAV Visual Localization — Edge Deployment</span>
+            <span class="project-status done">Completed</span>
+          </div>
+          <p class="project-desc">
+            Robust visual localization system for UAVs under viewpoint and appearance variation.
+            Optimized for real-time performance on NVIDIA Jetson and RDK X5.
+          </p>
+          <div class="project-stack">
+            <span class="stack-tag">Visual Localization</span>
+            <span class="stack-tag">Jetson</span>
+            <span class="stack-tag">RDK X5</span>
+            <span class="stack-tag">TensorRT</span>
+            <span class="stack-tag">ONNX</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── ROADMAP ── -->
+    <section id="roadmap">
+      <p class="section-label reveal">Roadmap</p>
+      <h2 class="reveal">What I'm<br/><em>Building Toward</em></h2>
+      <div class="roadmap reveal">
+        <div class="roadmap-item">
+          <div class="roadmap-dot rdone"></div>
+          <div class="roadmap-content">
+            <div class="roadmap-title rdone-title">First-author IEEE TIM submission</div>
+            <div class="roadmap-meta">UAV Visual Localization · Under Review</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-dot rdone"></div>
+          <div class="roadmap-content">
+            <div class="roadmap-title rdone-title">First-author IEEE RAL submission</div>
+            <div class="roadmap-meta">Cross-modal UAV VLN · Under Submission</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-dot ractive"></div>
+          <div class="roadmap-content">
+            <div class="roadmap-title">ASCENT improvement demo (Habitat · HM3D)</div>
+            <div class="roadmap-meta">Currently active — training-free Mval fix + trajectory visualization</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-dot ractive"></div>
+          <div class="roadmap-content">
+            <div class="roadmap-title">Academic paper analysis series (小红书)</div>
+            <div class="roadmap-meta">Target: 6–8 Embodied AI deep-dives · In progress</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-dot rpending"></div>
+          <div class="roadmap-content">
+            <div class="roadmap-title">Robotics / Embodied AI Internship</div>
+            <div class="roadmap-meta">Target: 2026</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-dot rpending"></div>
+          <div class="roadmap-content">
+            <div class="roadmap-title">PhD Application — Embodied AI</div>
+            <div class="roadmap-meta">Target: Fall 2027</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CONTACT ── -->
+    <section id="contact">
+      <p class="section-label reveal">Contact</p>
+      <h2 class="reveal">Let's<br/><em>Connect</em></h2>
+      <p class="reveal" style="color:var(--muted); max-width:500px; margin-bottom:0.5rem;">
+        I'm open to research discussions, collaboration, and <strong style="color:var(--text)">2026 internship opportunities</strong> in robotics and embodied AI.
+      </p>
+      <div class="contact-row reveal">
+        <a class="contact-link" href="mailto:YOUR_EMAIL">
+          <span class="contact-icon">✉</span> YOUR_EMAIL
+        </a>
+        <a class="contact-link" href="https://github.com/YOUR_GITHUB" target="_blank">
+          <span class="contact-icon">⌥</span> GitHub
+        </a>
+        <a class="contact-link" href="YOUR_SCHOLAR_LINK" target="_blank">
+          <span class="contact-icon">◎</span> Google Scholar
+        </a>
+        <a class="contact-link" href="#">
+          <span class="contact-icon">◈</span> 小红书
+        </a>
+      </div>
+      <div class="note-box reveal">
+        <strong>// NOTE</strong><br/>
+        Currently a Master's student at HIT with industry background in edge deployment.
+        Targeting a PhD in robotics / embodied AI for Fall 2027. If our research interests overlap —
+        navigation, manipulation, 3D scene understanding — I'd love to connect.
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <span>// YOUR_NAME · Harbin Institute of Technology · Updated 2026</span>
+  </footer>
+
+  <script>
+    // ── Scroll-based nav highlight
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          navLinks.forEach(a => a.classList.remove('active'));
+          const active = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+          if (active) active.classList.add('active');
+        }
+      });
+    }, { threshold: 0.35 });
+    sections.forEach(s => observer.observe(s));
+
+    // ── Reveal on scroll
+    const reveals = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          // stagger siblings
+          const siblings = [...e.target.parentElement.querySelectorAll('.reveal:not(.visible)')];
+          const idx = siblings.indexOf(e.target);
+          setTimeout(() => e.target.classList.add('visible'), idx * 80);
+          revealObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(r => revealObserver.observe(r));
+  </script>
+
+</body>
+</html>
