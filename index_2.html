@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ruiyang Zhang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Source+Sans+3:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --ink:     #1a1a1a;
+      --mid:     #555;
+      --light:   #999;
+      --rule:    #e0e0e0;
+      --accent:  #1a56db;
+      --bg:      #ffffff;
+      --serif:   'Lora', Georgia, serif;
+      --sans:    'Source Sans 3', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--rule);
+      z-index: 100;
+    }
+    .nav-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-name {
+      font-family: var(--serif);
+      font-size: 15px;
+      color: var(--ink);
+      letter-spacing: 0.01em;
+    }
+    .nav-links {
+      display: flex;
+      gap: 1.8rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 13px;
+      color: var(--mid);
+      letter-spacing: 0.03em;
+    }
+    .nav-links a:hover { color: var(--ink); text-decoration: none; }
+
+    /* ── LAYOUT ── */
+    .page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    section { padding: 4rem 0; border-bottom: 1px solid var(--rule); }
+    section:last-child { border-bottom: none; }
+
+    /* ── HERO ── */
+    #hero {
+      padding: 5rem 0 4rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .hero-label {
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-bottom: 1.2rem;
+      opacity: 0;
+      animation: up 0.5s 0.1s ease forwards;
+    }
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      font-weight: 400;
+      line-height: 1.15;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: up 0.5s 0.2s ease forwards;
+    }
+    h1 em { font-style: italic; }
+    .hero-bio {
+      font-size: 17px;
+      color: var(--mid);
+      max-width: 540px;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: up 0.5s 0.3s ease forwards;
+    }
+    .hero-bio strong { color: var(--ink); font-weight: 500; }
+    .hero-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      opacity: 0;
+      animation: up 0.5s 0.4s ease forwards;
+    }
+    .pill {
+      font-size: 13px;
+      padding: 0.35rem 0.9rem;
+      border: 1px solid var(--rule);
+      border-radius: 100px;
+      color: var(--mid);
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .pill:hover { border-color: var(--ink); color: var(--ink); text-decoration: none; }
+    .pill-accent { border-color: var(--accent); color: var(--accent); }
+    .pill-accent:hover { background: var(--accent); color: #fff; }
+
+    /* ── SECTION HEADINGS ── */
+    h2 {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: var(--ink);
+      margin-bottom: 2rem;
+    }
+
+    /* ── ABOUT ── */
+    .about-body {
+      display: grid;
+      grid-template-columns: 1fr 200px;
+      gap: 3rem;
+      align-items: start;
+    }
+    .about-text p { color: var(--mid); margin-bottom: 1rem; }
+    .about-text p:last-child { margin-bottom: 0; }
+    .about-text strong { color: var(--ink); font-weight: 500; }
+    .about-meta { font-size: 14px; }
+    .meta-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .meta-row:first-child { border-top: 1px solid var(--rule); }
+    .meta-key { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--light); }
+    .meta-val { color: var(--ink); }
+
+    /* ── PUBLICATIONS ── */
+    .pub-list { display: flex; flex-direction: column; gap: 0; }
+    .pub-item {
+      display: grid;
+      grid-template-columns: 68px 1fr;
+      gap: 0 1.5rem;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .pub-item:first-child { border-top: 1px solid var(--rule); }
+    .pub-venue {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      padding-top: 3px;
+      line-height: 1.4;
+    }
+    .pub-year { font-size: 11px; color: var(--light); margin-top: 2px; }
+    .pub-title {
+      font-family: var(--serif);
+      font-size: 15px;
+      color: var(--ink);
+      margin-bottom: 0.3rem;
+      line-height: 1.5;
+    }
+    .pub-authors { font-size: 13px; color: var(--mid); margin-bottom: 0.5rem; }
+    .pub-authors strong { color: var(--ink); font-weight: 500; }
+    .pub-status {
+      display: inline-block;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+    }
+    .s-review  { background: #fff8e6; color: #a05c00; }
+    .s-submit  { background: #edfaf3; color: #1a7a46; }
+    .s-pub     { background: #edf3ff; color: #1a56db; }
+
+    /* ── PROJECTS ── */
+    .proj-list { display: flex; flex-direction: column; gap: 0; }
+    .proj-item {
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .proj-item:first-child { border-top: 1px solid var(--rule); }
+    .proj-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.4rem;
+      gap: 1rem;
+    }
+    .proj-title { font-size: 15px; font-weight: 500; color: var(--ink); }
+    .proj-tag {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--light);
+      white-space: nowrap;
+    }
+    .tag-active { color: var(--accent); }
+    .proj-desc { font-size: 14px; color: var(--mid); margin-bottom: 0.8rem; line-height: 1.7; }
+    .proj-stack { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .stack { font-size: 12px; color: var(--mid); padding: 0.2rem 0.55rem; border: 1px solid var(--rule); border-radius: 3px; }
+
+    /* ── POSTS ── */
+    .post-list { display: flex; flex-direction: column; gap: 0; }
+    .post-item {
+      display: grid;
+      grid-template-columns: 68px 1fr;
+      gap: 0 1.5rem;
+      padding: 1.4rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .post-item:first-child { border-top: 1px solid var(--rule); }
+    .post-platform {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--light);
+      padding-top: 3px;
+    }
+    .post-title {
+      font-family: var(--serif);
+      font-size: 15px;
+      color: var(--ink);
+      margin-bottom: 0.3rem;
+      line-height: 1.5;
+    }
+    .post-title a { color: var(--ink); }
+    .post-title a:hover { color: var(--accent); text-decoration: none; }
+    .post-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+    /* ── ROADMAP ── */
+    .timeline { display: flex; flex-direction: column; gap: 0; }
+    .tl-item {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 0 1.5rem;
+      padding: 1.1rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .tl-item:first-child { border-top: 1px solid var(--rule); }
+    .tl-date { font-size: 12px; color: var(--light); padding-top: 2px; }
+    .tl-title { font-size: 14px; color: var(--mid); }
+    .tl-done .tl-title { text-decoration: line-through; color: var(--light); }
+    .tl-active .tl-title { color: var(--ink); font-weight: 500; }
+    .tl-active .tl-date { color: var(--accent); }
+    .tl-note { font-size: 13px; color: var(--light); margin-top: 0.2rem; }
+
+    /* ── CONTACT ── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    .contact-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      padding: 1.2rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .contact-item:nth-child(odd) { padding-right: 2rem; border-right: 1px solid var(--rule); }
+    .contact-item:nth-child(even) { padding-left: 2rem; }
+    .contact-item:nth-last-child(-n+2) { border-bottom: none; }
+    .c-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--light); }
+    .c-val { font-size: 14px; color: var(--ink); }
+
+    .note {
+      margin-top: 2.5rem;
+      padding: 1.2rem 1.5rem;
+      border-left: 2px solid var(--ink);
+      font-size: 14px;
+      color: var(--mid);
+      line-height: 1.8;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 12px;
+      color: var(--light);
+      border-top: 1px solid var(--rule);
+    }
+
+    /* ── ANIMATION ── */
+    @keyframes up {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .reveal { opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .about-body { grid-template-columns: 1fr; }
+      .about-meta { display: none; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .contact-item:nth-child(odd) { border-right: none; padding-right: 0; }
+      .contact-item:nth-child(even) { padding-left: 0; }
+      .contact-item:nth-last-child(-n+2) { border-bottom: 1px solid var(--rule); }
+      .contact-item:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <span class="nav-name">Ruiyang Zhang</span>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#publications">Papers</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#posts">Posts</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page">
+
+  <section id="hero">
+    <p class="hero-label">Robotics · Embodied AI · Edge Deployment</p>
+    <h1>Ruiyang Zhang</h1>
+    <p class="hero-bio">
+      Master's student at <strong>Harbin Institute of Technology</strong>, working on
+      UAV visual localization, cross-modal vision-language navigation, and efficient
+      edge deployment. Targeting a <strong>PhD in Embodied AI</strong> for Fall 2027.
+    </p>
+    <div class="hero-links">
+      <a class="pill pill-accent" href="#publications">Publications</a>
+      <a class="pill" href="mailto:YOUR_EMAIL">Email</a>
+      <a class="pill" href="https://github.com/coddd-bur" target="_blank">GitHub</a>
+      <a class="pill" href="#">CV</a>
+    </div>
+  </section>
+
+  <section id="about">
+    <h2 class="reveal">About</h2>
+    <div class="about-body reveal">
+      <div class="about-text">
+        <p>
+          I'm pursuing a Master's degree in <strong>Control Science &amp; Engineering</strong>
+          at Harbin Institute of Technology, ranked near the top of my cohort.
+          Before my Master's I worked as an <strong>edge algorithm engineer</strong> in industry,
+          deploying perception models on Jetson and RDK X5 platforms.
+        </p>
+        <p>
+          My research centers on enabling robots to navigate open-world environments
+          through <strong>language and visual understanding</strong> — combining semantic
+          frontier exploration, cross-modal perception, and on-device inference.
+        </p>
+        <p>
+          I'm actively seeking a <strong>2026 robotics internship</strong> and a
+          PhD position for Fall 2027 in navigation, manipulation, or 3D scene understanding.
+        </p>
+      </div>
+      <div class="about-meta">
+        <div class="meta-row">
+          <span class="meta-key">Affiliation</span>
+          <span class="meta-val">Harbin Institute of Technology</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-key">Degree</span>
+          <span class="meta-val">M.Eng · Control Science</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-key">Industry</span>
+          <span class="meta-val">Edge Algorithm Engineer</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-key">Target</span>
+          <span class="meta-val">PhD · Fall 2027</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-key">Location</span>
+          <span class="meta-val">Harbin, China</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="publications">
+    <h2 class="reveal">Publications</h2>
+    <div class="pub-list reveal">
+
+      <div class="pub-item">
+        <div>
+          <div class="pub-venue">IEEE RAL</div>
+          <div class="pub-year">2025</div>
+        </div>
+        <div>
+          <div class="pub-title">Cross-modal Vision-Language Navigation for Unmanned Aerial Vehicles</div>
+          <div class="pub-authors"><strong>Ruiyang Zhang</strong>, Co-author, Co-author</div>
+          <span class="pub-status s-submit">Under Submission</span>
+        </div>
+      </div>
+
+      <div class="pub-item">
+        <div>
+          <div class="pub-venue">IEEE TIM</div>
+          <div class="pub-year">2025</div>
+        </div>
+        <div>
+          <div class="pub-title">Robust Visual Localization for UAVs under Appearance Variation</div>
+          <div class="pub-authors"><strong>Ruiyang Zhang</strong>, Co-author, Co-author</div>
+          <span class="pub-status s-review">Under Review</span>
+        </div>
+      </div>
+
+      <div class="pub-item">
+        <div>
+          <div class="pub-venue">ICSMD</div>
+          <div class="pub-year">2024</div>
+        </div>
+        <div>
+          <div class="pub-title">Paper Title at ICSMD Conference</div>
+          <div class="pub-authors"><strong>Ruiyang Zhang</strong>, Co-author</div>
+          <span class="pub-status s-pub">Published</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="projects">
+    <h2 class="reveal">Projects</h2>
+    <div class="proj-list reveal">
+
+      <div class="proj-item">
+        <div class="proj-header">
+          <span class="proj-title">ASCENT-Improved — Training-free Frontier Scoring Fix</span>
+          <span class="proj-tag tag-active">In Progress</span>
+        </div>
+        <p class="proj-desc">
+          Identified a flaw in ASCENT's (RAL 2026) additive frontier scoring where proximity
+          can dominate semantic relevance. Proposed a multiplicative modulation fix validated
+          on HM3D in Habitat Simulator — entirely training-free, inference-time only.
+        </p>
+        <div class="proj-stack">
+          <span class="stack">Habitat Sim</span>
+          <span class="stack">BLIP-2</span>
+          <span class="stack">Qwen2.5-7B</span>
+          <span class="stack">AWQ / INT4</span>
+          <span class="stack">Object-Goal Nav</span>
+        </div>
+      </div>
+
+      <div class="proj-item">
+        <div class="proj-header">
+          <span class="proj-title">Cross-modal UAV VLN System</span>
+          <span class="proj-tag">Completed</span>
+        </div>
+        <p class="proj-desc">
+          End-to-end vision-language navigation pipeline for UAVs with cross-modal
+          perception and efficient on-device inference, deployed on real hardware.
+        </p>
+        <div class="proj-stack">
+          <span class="stack">UAV</span>
+          <span class="stack">VLN</span>
+          <span class="stack">ROS</span>
+          <span class="stack">Edge Deployment</span>
+        </div>
+      </div>
+
+      <div class="proj-item">
+        <div class="proj-header">
+          <span class="proj-title">UAV Visual Localization on Edge Hardware</span>
+          <span class="proj-tag">Completed</span>
+        </div>
+        <p class="proj-desc">
+          Robust visual localization under viewpoint and appearance variation,
+          optimized for real-time performance on NVIDIA Jetson and RDK X5.
+        </p>
+        <div class="proj-stack">
+          <span class="stack">Jetson</span>
+          <span class="stack">RDK X5</span>
+          <span class="stack">TensorRT</span>
+          <span class="stack">ONNX</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="posts">
+    <h2 class="reveal">Posts</h2>
+    <div class="post-list reveal">
+
+      <div class="post-item">
+        <div class="post-platform">小红书</div>
+        <div>
+          <div class="post-title"><a href="#" target="_blank">GLOVER++ — Generalizable Open-Vocabulary Affordance Reasoning</a></div>
+          <div class="post-desc">深度解析 GLOVER++ 的跨模态 affordance 推理机制，以及对 Embodied AI 抓取任务的启发。</div>
+        </div>
+      </div>
+
+      <div class="post-item">
+        <div class="post-platform">小红书</div>
+        <div>
+          <div class="post-title"><a href="#" target="_blank">ASCENT — Adaptive Semantic Frontier Exploration (RAL 2026)</a></div>
+          <div class="post-desc">解析 ASCENT 的前沿评分公式，以及我发现的加法结构缺陷与改进思路。</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="roadmap">
+    <h2 class="reveal">Roadmap</h2>
+    <div class="timeline reveal">
+      <div class="tl-item tl-done">
+        <span class="tl-date">2025</span>
+        <div>
+          <div class="tl-title">First-author IEEE TIM submission</div>
+          <div class="tl-note">UAV Visual Localization · Under Review</div>
+        </div>
+      </div>
+      <div class="tl-item tl-done">
+        <span class="tl-date">2025</span>
+        <div>
+          <div class="tl-title">First-author IEEE RAL submission</div>
+          <div class="tl-note">Cross-modal UAV VLN · Under Submission</div>
+        </div>
+      </div>
+      <div class="tl-item tl-active">
+        <span class="tl-date">Now</span>
+        <div>
+          <div class="tl-title">ASCENT improvement demo (Habitat · HM3D)</div>
+          <div class="tl-note">Training-free Mval fix + trajectory visualization</div>
+        </div>
+      </div>
+      <div class="tl-item tl-active">
+        <span class="tl-date">Now</span>
+        <div>
+          <div class="tl-title">Academic paper series (小红书 · Embodied AI)</div>
+          <div class="tl-note">Target 6–8 deep-dive analyses</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-date">2026</span>
+        <div>
+          <div class="tl-title">Robotics / Embodied AI Internship</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-date">Fall 2027</span>
+        <div>
+          <div class="tl-title">PhD Application · Embodied AI</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <h2 class="reveal">Contact</h2>
+    <div class="contact-grid reveal">
+      <div class="contact-item">
+        <span class="c-label">Email</span>
+        <a class="c-val" href="mailto:YOUR_EMAIL">YOUR_EMAIL</a>
+      </div>
+      <div class="contact-item">
+        <span class="c-label">GitHub</span>
+        <a class="c-val" href="https://github.com/coddd-bur" target="_blank">github.com/coddd-bur</a>
+      </div>
+      <div class="contact-item">
+        <span class="c-label">小红书</span>
+        <a class="c-val" href="#">Paper Notes Series</a>
+      </div>
+    </div>
+    <div class="note reveal">
+      I'm open to research discussion and <strong>2026 internship opportunities</strong>
+      in robotics and embodied AI. If our interests overlap — navigation, manipulation,
+      3D scene understanding — feel free to reach out.
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Ruiyang Zhang · Harbin Institute of Technology · 2026
+</footer>
+
+<script>
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('.nav-links a');
+  new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(a => a.style.color = '');
+        const a = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+        if (a) a.style.color = '#1a1a1a';
+      }
+    });
+  }, { threshold: 0.4 }).observe && sections.forEach(s =>
+    new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        links.forEach(a => a.style.color = '');
+        const a = document.querySelector(`.nav-links a[href="#${s.id}"]`);
+        if (a) a.style.color = '#1a1a1a';
+      }
+    }, { threshold: 0.4 }).observe(s)
+  );
+
+  new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); }
+    });
+  }, { threshold: 0.08 }).observe && document.querySelectorAll('.reveal').forEach(el =>
+    new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) entries[0].target.classList.add('in');
+    }, { threshold: 0.08 }).observe(el)
+  );
+</script>
+
+</body>
+</html>
